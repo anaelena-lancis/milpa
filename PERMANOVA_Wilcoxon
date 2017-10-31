@@ -1,0 +1,25 @@
+#This script was used to performed the statistical analysis on the 
+# soil physicochemical parameters......
+
+#Set database
+data = read.csv("nutrientes.csv", header= T, sep = ",")
+
+#Testing multivariate normality
+library(MVN)
+mardiaTest(data[1:54,3:8])
+
+#Permutational Multivariate Analysis of Variance (PERMANOVA)
+library(vegan)
+#among time
+adonis(data[3:8] ~ Sampling_time, data = data, permutations = 1e3)
+#among plot
+adonis(data[3:8] ~ X...Plot, data = data, permutations = 1e3)
+#interaction plot*time
+adonis(data[3:8] ~ Sampling_time*X...Plot, data = data, permutations = 1e3)
+
+#Pairwise comparisons across time points--Wilcoxon rank
+library(pgirmess)
+
+t12<-data(1:36,1:8)
+st12<-t12[,2:8]
+lapply(st12[,c("pH","Ct","Nt","Pt","CNratio","CPratio")],function(x) wilcox.test(x~ st12$Sampling_time))
